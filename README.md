@@ -1,6 +1,6 @@
 # ZeroSum Gaming Platform
 
-ZeroSum is a competitive gaming platform built on blockchain. Players compete in strategic number games while spectators bet on outcomes. All games run transparently on smart contracts.
+ZeroSum is a competitive gaming platform built on blockchain. Players compete in strategic number games. Spectator betting is coming soon. All games run transparently on smart contracts.
 
 ## The Problem
 
@@ -8,13 +8,13 @@ Traditional online games lack transparency. Players cannot verify game fairness.
 
 ## The Solution
 
-ZeroSum solves these problems through blockchain technology. Every game runs on smart contracts that anyone verify. Prize distribution happens automatically and fairly. Spectators bet on players and earn rewards when their predictions win.
+ZeroSum solves these problems through blockchain technology. Every game runs on smart contracts that anyone verify. Prize distribution happens automatically and fairly. Spectator betting functionality is coming soon.
 
 ## How It Works
 
 Players create games by paying an entry fee. Another player joins with matching entry fee. Both players compete by subtracting numbers strategically. The player who forces their opponent to reach zero wins the prize pool.
 
-Spectators watch games and bet on which player wins. When their chosen player wins, they receive proportional rewards from the betting pool.
+Spectator betting is coming soon. Users will watch games and bet on which player wins. When their chosen player wins, they will receive proportional rewards from the betting pool.
 
 ## Key Features
 
@@ -26,9 +26,9 @@ All games run on blockchain smart contracts. Game rules execute automatically. N
 
 Prize pools distribute automatically to winners. Platform fees are visible and fixed. Staking bonuses reward committed players. All transactions appear on blockchain explorers.
 
-### Spectator Participation
+### Spectator Participation (Coming Soon)
 
-Watch any active game in real time. Bet on your favorite player. Earn rewards when your prediction wins. Minimum bet amounts make participation accessible.
+Spectator betting functionality is currently under development. Soon you will watch any active game in real time, bet on your favorite player, and earn rewards when your prediction wins. Minimum bet amounts will make participation accessible.
 
 ### Multiple Game Modes
 
@@ -48,7 +48,9 @@ Lock tokens to earn bonus rewards. Higher stakes increase winning bonuses. Staki
 4. Play strategically to win the prize pool
 5. Withdraw your winnings to your wallet
 
-### For Spectators
+### For Spectators (Coming Soon)
+
+Spectator betting is currently under development. When available, you will:
 
 1. Browse active games on the platform
 2. Select a game and choose your predicted winner
@@ -58,7 +60,7 @@ Lock tokens to earn bonus rewards. Higher stakes increase winning bonuses. Staki
 
 ## Supported Networks
 
-ZeroSum operates on multiple blockchain networks. Switch between networks using the network selector. Each network has separate game pools and betting markets.
+ZeroSum operates on multiple blockchain networks. Switch between networks using the network selector. Each network has separate game pools. Betting markets are coming soon.
 
 **Base Sepolia Testnet**
 - Test the platform with test tokens
@@ -113,17 +115,17 @@ Lock tokens in the staking system to earn bonus rewards on game winnings. Stakin
 
 Staked tokens also earn passive rewards over time. Unstake your tokens whenever you want to withdraw them.
 
-## Betting System
+## Betting System (Coming Soon)
 
-Spectators bet on games by selecting a predicted winner and placing a bet amount. Minimum bet is 0.01 ETH or equivalent. Each user bets once per game.
+Spectator betting is currently under development. When available, spectators will bet on games by selecting a predicted winner and placing a bet amount. Minimum bet will be 0.01 ETH or equivalent. Each user will bet once per game.
 
-When the game finishes, winning bettors receive proportional shares of the betting pool. Larger bets receive larger shares. The platform takes a 3% fee from the total betting pool.
+When games finish, winning bettors will receive proportional shares of the betting pool. Larger bets will receive larger shares. The platform will take a 3% fee from the total betting pool.
 
 ## Platform Fees
 
 Game entry fees include a 5% platform fee. This fee supports platform maintenance and development. Remaining funds form the prize pool distributed to winners.
 
-Betting pools include a 3% platform fee. This fee supports betting infrastructure and payouts. Remaining funds distribute to winning bettors.
+Betting pools will include a 3% platform fee when spectator betting launches. This fee will support betting infrastructure and payouts. Remaining funds will distribute to winning bettors.
 
 ## Security
 
