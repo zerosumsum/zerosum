@@ -23,8 +23,8 @@ const CHAINS = {
 
 /** Get ethers.js provider for contract interactions - Your Original Simple Pattern! */
 export function getProvider({ chainId } = {}) {
-    const targetChainId = chainId || 84532; // Default to Base Sepolia
-    const rpcUrl = RPC_URLS[targetChainId] || RPC_URLS[84532]; // Fallback to Base Sepolia
+    const targetChainId = chainId || 11142220; // Default to Celo Sepolia Testnet
+    const rpcUrl = RPC_URLS[targetChainId] || RPC_URLS[11142220]; // Fallback to Celo Sepolia Testnet
 
     console.log(`🔗 Creating ethers provider for chain ${targetChainId}`);
     console.log(`🔗 RPC URL: ${rpcUrl}`);
@@ -63,9 +63,9 @@ export function getContract(address, abi, { chainId } = {}) {
 export function getViemClient(wagmiConfig = null, { chainId } = {}) {
     console.log("🔧 getViemClient called with:", { chainId, hasConfig: !!wagmiConfig });
 
-    const targetChainId = chainId || 84532; // Default to Base Sepolia
-    const chain = CHAINS[targetChainId] || baseSepolia;
-    const rpcUrl = RPC_URLS[targetChainId] || RPC_URLS[84532];
+    const targetChainId = chainId || 11142220; // Default to Celo Sepolia Testnet
+    const chain = CHAINS[targetChainId] || celoAlfajores;
+    const rpcUrl = RPC_URLS[targetChainId] || RPC_URLS[11142220];
 
     console.log(`🔗 Creating viem client for chain ${targetChainId} (${chain.name})`);
     console.log(`🔗 RPC URL: ${rpcUrl}`);
