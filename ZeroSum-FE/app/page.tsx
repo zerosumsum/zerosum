@@ -64,6 +64,7 @@ export default function HomePage() {
       icon: Skull,
       iconColor: "text-fuchsia-400",
       iconBg: "bg-fuchsia-500/20",
+      comingSoon: true,
     },
     {
       id: "team-warfare",
