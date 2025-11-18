@@ -47,8 +47,8 @@ const EXPLORER_URLS: Record<number, string> = {
 }
 
 const getExplorerTxUrl = (chainId: number | undefined, hash: string) => {
-  const normalizedChainId = chainId ?? 84532
-  const baseUrl = EXPLORER_URLS[normalizedChainId] || EXPLORER_URLS[84532]
+  const normalizedChainId = chainId ?? 11142220
+  const baseUrl = EXPLORER_URLS[normalizedChainId] || EXPLORER_URLS[11142220]
   const normalized = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
   return `${normalized}/tx/${hash}`
 }
@@ -57,8 +57,8 @@ const getExplorerTxUrl = (chainId: number | undefined, hash: string) => {
 const getContractAddresses = (chainId: number) => {
   const addresses = CONTRACT_ADDRESSES[chainId as keyof typeof CONTRACT_ADDRESSES]
   if (!addresses) {
-    console.warn(`⚠️ No contract addresses for chain ${chainId}, falling back to Base Sepolia`)
-    return CONTRACT_ADDRESSES[84532]
+    console.warn(`⚠️ No contract addresses for chain ${chainId}, falling back to Celo Sepolia Testnet`)
+    return CONTRACT_ADDRESSES[11142220]
   }
   return addresses
 }

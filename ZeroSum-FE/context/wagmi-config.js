@@ -54,7 +54,7 @@ export const WAGMI_CHAINS = {
 };
 
 export const wagmiConfig = createConfig({
-  chains: [baseSepolia, celo, celoAlfajores],
+  chains: [celoAlfajores, celo, baseSepolia],
   transports: {
     [baseSepolia.id]: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC || 'https://sepolia.base.org'),
     [celo.id]: http(process.env.NEXT_PUBLIC_CELO_MAINNET_RPC || 'https://forno.celo.org'),
