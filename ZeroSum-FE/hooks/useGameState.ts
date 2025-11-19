@@ -1,6 +1,6 @@
 // hooks/useGameState.ts - IMPROVED for better battle page flow
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from 'thirdweb/react'
 import { useZeroSumData, useZeroSumContract, GameStatus, GameMode } from './useZeroSumContract'
 import { toast } from 'react-hot-toast'
 
@@ -66,7 +66,9 @@ export interface GameMove {
 type HookState = 'idle' | 'initializing' | 'ready' | 'error' | 'disabled'
 
 export function useGameState(gameId: string | number) {
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
+  const isConnected = Boolean(address)
   const { 
     getGame, 
     getPlayers, 
