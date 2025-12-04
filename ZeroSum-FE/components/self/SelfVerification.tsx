@@ -142,7 +142,7 @@ export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificati
                 href="https://self.xyz"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-cyan-400 underline"
+                className="text-cyan-400 underline hover:text-cyan-300 transition-colors"
               >
                 Download it here
               </a>
