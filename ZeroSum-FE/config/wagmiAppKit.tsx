@@ -20,8 +20,8 @@ if (!projectId) {
 const isMainnet = process.env.NEXT_PUBLIC_ENVIRONMENT === 'mainnet'
 
 // Dynamic network configuration based on environment (Billoq-style)
-const mainnetNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [base, celo]
-const testnetNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepolia, celoSepolia]
+const mainnetNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [celo, base]
+const testnetNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [celoSepolia, baseSepolia]
 
 // Use appropriate networks based on environment (always ensure at least one network)
 export const networks = isMainnet ? mainnetNetworks : testnetNetworks

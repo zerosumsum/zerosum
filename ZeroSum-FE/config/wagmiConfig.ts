@@ -33,7 +33,7 @@ const celoMainnetRpc = process.env.NEXT_PUBLIC_CELO_MAINNET_RPC || 'https://forn
 const celoTestnetRpc = process.env.NEXT_PUBLIC_CELO_SEPOLIA_RPC || 'https://forno.celo-sepolia.celo-testnet.org/';
 
 export const wagmiConfig = createConfig({
-  chains: [base, baseSepolia, celo, celoAlfajores],
+  chains: [celoAlfajores, celo, base, baseSepolia],
   transports: {
     [base.id]: http(),
     [baseSepolia.id]: http('https://base-sepolia.drpc.org'),
