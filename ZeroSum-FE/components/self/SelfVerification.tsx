@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getUniversalLink } from "@selfxyz/core";
 import {
   SelfQRcodeWrapper,
   SelfAppBuilder,
