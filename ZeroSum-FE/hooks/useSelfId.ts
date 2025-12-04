@@ -87,7 +87,7 @@ export function useSelfId() {
           localStorage.setItem(`self_profile_${address}`, JSON.stringify(newProfile));
         }
 
-        console.log("Verification proof ready for onchain submission:", {
+        console.log("✅ Verification proof ready for onchain submission:", {
           attestationId: result.attestationId,
           hasProof: !!result.proof,
           hasPublicSignals: !!result.publicSignals,
