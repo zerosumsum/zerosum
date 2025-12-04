@@ -73,6 +73,7 @@ export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificati
   const handleSuccess = async (result: any) => {
     console.log("Self verification received:", result);
     
+    // Pass verification data to parent component
     onSuccess({
       ...result,
       proof: result.proof,
