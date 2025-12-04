@@ -69,6 +69,12 @@ export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificati
     }
   }, [address, onError]);
 
+  // Debug log to see if modal is rendering
+  useEffect(() => {
+    console.log("🔵 SelfVerification modal is rendering");
+    return () => console.log("🔴 SelfVerification modal unmounted");
+  }, []);
+
   const handleSuccess = async (result: any) => {
     console.log("Self verification received:", result);
     
@@ -104,12 +110,23 @@ export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificati
 
   return (
     <div 
-      className="fixed top-0 left-0 right-0 bottom-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm"
-      style={{ position: 'fixed', inset: 0 }}
+      className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+      style={{ 
+        position: 'fixed', 
+        inset: 0, 
+        zIndex: 99999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
     >
       <div 
         className="relative w-full max-w-md m-4 rounded-3xl border border-white/10 bg-slate-900 p-6 shadow-2xl"
-        style={{ maxHeight: '90vh', overflowY: 'auto' }}
+        style={{ 
+          maxHeight: '90vh', 
+          overflowY: 'auto',
+          zIndex: 100000
+        }}
       >
         {onClose && (
           <button
