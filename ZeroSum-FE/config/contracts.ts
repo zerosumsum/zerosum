@@ -1,8 +1,13 @@
 /**
- * Contract addresses configuration
+ * Contract addresses configuration for ZeroSum Gaming
+ * 
  * Self Protocol IdentityVerificationHub addresses:
  * - Mainnet: 0xe57F4773bd9c9d8b6Cd70431117d353298B9f5BF
  * - Testnet (Celo Sepolia): 0x16ECBA51e18a4a7e61fdC417f0d47AFEeDfbed74
+ * 
+ * ZeroSum Game Contracts (Celo Sepolia):
+ * - Game Contract: 0x0f764437ffBE1fcd0d0d276a164610422710B482
+ * - Spectator Contract: 0xE2228Cf8a49Cd23993442E5EE5a39d6180E0d25f
  */
 
 export const CONTRACTS = {
