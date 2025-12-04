@@ -18,39 +18,41 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { useConfig, usePublicClient } from "wagmi"
 import { useActiveAccount, useActiveWallet, useDisconnect as useThirdwebDisconnect } from "thirdweb/react"
+import { getRpcClient, eth_getBalance } from "thirdweb/rpc"
+import { celoSepolia } from "@/lib/thirdwebChains"
+import { thirdwebClient } from "@/lib/thirdwebClient"
 import WalletConnectButton from "./WalletConnectButton"
 import { toast } from "react-hot-toast"
-import { getViemClient } from "@/config/adapter"
-import { formatEther } from "viem"
 import MyGamesDropdown from "./MyGamesDropdown"
 import { useSelfId } from "@/hooks/useSelfId"
 import { SelfVerification } from "@/components/self/SelfVerification"
 
-// Simple ETH Balance Hook
-const useETHBalance = (address: string | undefined) => {
-  const config = useConfig()
-  const publicClient = usePublicClient()
+// Simple CELO Balance Hook
+const useCELOBalance = (address: string | undefined) => {
   const [balance, setBalance] = useState<string>("0.0000")
   const [isLoading, setIsLoading] = useState(false)
 
   const fetchBalance = async () => {
-    if (!address || !config) {
-      // Don't log when not connected - this is expected behavior
-      return
-    }
+    if (!address) return
 
     setIsLoading(true)
     try {
-      // Use publicClient directly since it's already on the correct chain
-      if (!publicClient) throw new Error("Public client not available")
-
-      const rawBalance = await publicClient.getBalance({ address: address as `0x${string}` })
-      const formatted = parseFloat(formatEther(rawBalance)).toFixed(4)
+      const rpcRequest = getRpcClient({ 
+        client: thirdwebClient, 
+        chain: celoSepolia 
+      })
+      
+      const balanceWei = await eth_getBalance(rpcRequest, {
+        address: address as `0x${string}`,
+      })
+      
+      // Convert Wei to CELO (divide by 10^18)
+      const balanceInCelo = Number(balanceWei) / 1e18
+      const formatted = balanceInCelo.toFixed(4)
       setBalance(formatted)
     } catch (err) {
-      console.error("❌ Error fetching ETH balance:", err)
+      console.error("❌ Error fetching CELO balance:", err)
       setBalance("0.0000")
     } finally {
       setIsLoading(false)
@@ -58,13 +60,12 @@ const useETHBalance = (address: string | undefined) => {
   }
 
   useEffect(() => {
-    // Only fetch balance if wallet is connected
-    if (address && config && publicClient) {
+    if (address) {
       fetchBalance()
       const interval = setInterval(fetchBalance, 30000)
       return () => clearInterval(interval)
     }
-  }, [address, config, publicClient])
+  }, [address])
 
   return { balance, isLoading, refetch: fetchBalance }
 }
@@ -86,8 +87,8 @@ export default function UnifiedGamingNavigation() {
   const address = account?.address
   const isConnected = Boolean(address)
   
-  // Simple balance hook
-  const mntBalance = useETHBalance(address)
+  // CELO balance hook
+  const celoBalance = useCELOBalance(address)
 
   // Self.xyz identity verification
   const {
@@ -211,7 +212,7 @@ export default function UnifiedGamingNavigation() {
                     <div className="flex items-center space-x-2">
                       <Coins className="w-4 h-4 text-emerald-400" />
                       <span className="text-sm font-medium text-emerald-400">
-                        {mntBalance.isLoading ? "..." : `${mntBalance.balance} ETH`}
+                        {celoBalance.isLoading ? "..." : `${celoBalance.balance} CELO`}
                       </span>
                     </div>
                   </Badge>
@@ -357,10 +358,10 @@ export default function UnifiedGamingNavigation() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Coins className="w-4 h-4 text-emerald-400" />
-                        <span className="text-sm font-medium text-emerald-300">ETH Balance</span>
+                        <span className="text-sm font-medium text-emerald-300">CELO Balance</span>
                       </div>
                       <span className="text-sm font-bold text-emerald-400">
-                        {mntBalance.isLoading ? "..." : `${mntBalance.balance} ETH`}
+                        {celoBalance.isLoading ? "..." : `${celoBalance.balance} CELO`}
                       </span>
                     </div>
                   </div>
