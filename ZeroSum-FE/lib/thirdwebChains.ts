@@ -2,7 +2,6 @@
 
 import {
   celo,
-  celoAlfajores,
 } from "thirdweb/chains";
 import { defineChain } from "thirdweb";
 
@@ -39,7 +38,6 @@ export const mainnetChains: ThirdwebChain[] = [celo];
 // Testnet chains - Celo Sepolia as default
 export const testnetChains: ThirdwebChain[] = [
   celoSepolia,
-  celoAlfajores,
 ];
 
 export const supportedChains = (isMainnet ? mainnetChains : testnetChains) as ThirdwebChain[];
