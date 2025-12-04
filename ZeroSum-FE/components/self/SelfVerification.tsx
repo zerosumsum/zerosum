@@ -20,7 +20,6 @@ interface SelfVerificationProps {
 export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificationProps) {
   const { address } = useAccount();
   const [selfApp, setSelfApp] = useState<SelfApp | null>(null);
-  const [universalLink, setUniversalLink] = useState("");
 
   const apiEndpoint = process.env.NEXT_PUBLIC_SELF_ENDPOINT || "https://playground.self.xyz/api/verify";
   const isMainnet = apiEndpoint.includes("self.xyz") && 
