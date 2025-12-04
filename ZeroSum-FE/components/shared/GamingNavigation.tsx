@@ -17,7 +17,7 @@ import {
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { useAccount, useDisconnect, useConfig, usePublicClient } from "wagmi"
-import AppKitConnectButton from "./AppKitConnectButton"
+import WalletConnectButton from "./WalletConnectButton"
 import { toast } from "react-hot-toast"
 import { getViemClient } from "@/config/adapter"
 import { formatEther } from "viem"
@@ -263,7 +263,7 @@ export default function UnifiedGamingNavigation() {
               </>
             ) : (
               <div className="flex flex-col items-center gap-2">
-                <AppKitConnectButton />
+                <WalletConnectButton />
                 <p className="text-xs text-slate-400 text-center">
                   Connect with any supported wallet
                 </p>
@@ -306,7 +306,7 @@ export default function UnifiedGamingNavigation() {
               {/* Mobile Connect Button */}
               {!isConnected && (
                 <div className="mx-4">
-                  <AppKitConnectButton />
+                  <WalletConnectButton />
                 </div>
               )}
               
