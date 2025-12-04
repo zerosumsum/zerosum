@@ -21,3 +21,6 @@ export const CONTRACTS = {
   SPECTATOR_CONTRACT: (process.env.NEXT_PUBLIC_SPECTATOR_CONTRACT_ADDRESS ||
     "0xE2228Cf8a49Cd23993442E5EE5a39d6180E0d25f") as `0x${string}`,
 } as const;
+
+// Export individual contracts for convenience
+export const { SELF_VERIFICATION_HUB, GAME_CONTRACT, SPECTATOR_CONTRACT } = CONTRACTS;
