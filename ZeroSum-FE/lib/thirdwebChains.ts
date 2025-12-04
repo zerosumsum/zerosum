@@ -25,10 +25,10 @@ export const celoSepolia = defineChain({
     {
       name: "CeloScan",
       url: "https://alfajores.celoscan.io",
-      apiUrl: "https://api-alfajores.celoscan.io/api",
     },
   ],
   testnet: true,
+  rpc: "https://forno.celo-sepolia.celo-testnet.org",
 });
 
 const isMainnet = process.env.NEXT_PUBLIC_ENVIRONMENT === "mainnet";
