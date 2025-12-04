@@ -69,8 +69,8 @@ export function useSelfId() {
           credentialSubject: result.credentialSubject,
         };
 
-        const handle = `self:${address.slice(0, 8)}...${address.slice(-6)}`;
-        const reputationScore = 50;
+        const handle = `${address.slice(0, 6)}...${address.slice(-4)}`;
+        const reputationScore = 100;
 
         const newProfile: SelfIdProfile = {
           handle,
