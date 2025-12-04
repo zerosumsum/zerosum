@@ -12,7 +12,9 @@ import {
   Plus,
   Swords,
   Eye,
-  Trophy
+  Trophy,
+  Shield,
+  CheckCircle
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
@@ -22,6 +24,8 @@ import { toast } from "react-hot-toast"
 import { getViemClient } from "@/config/adapter"
 import { formatEther } from "viem"
 import MyGamesDropdown from "./MyGamesDropdown"
+import { useSelfId } from "@/hooks/useSelfId"
+import { SelfVerification } from "@/components/self/SelfVerification"
 
 // Simple ETH Balance Hook
 const useETHBalance = (address: string | undefined) => {
@@ -79,6 +83,16 @@ export default function UnifiedGamingNavigation() {
   
   // Simple balance hook
   const mntBalance = useETHBalance(address)
+
+  // Self.xyz identity verification
+  const {
+    isLinked,
+    linkSelfId,
+    showVerification,
+    setShowVerification,
+    handleVerificationSuccess,
+    handleVerificationError,
+  } = useSelfId()
 
   useEffect(() => setMounted(true), [])
 
@@ -225,6 +239,25 @@ export default function UnifiedGamingNavigation() {
 
                       {/* Menu Items */}
                       <div className="p-2">
+                        {/* Self.xyz Verification */}
+                        {isLinked ? (
+                          <div className="mb-2 mx-2 p-2 bg-green-900/20 rounded-md flex items-center text-green-400 border border-green-500/20">
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            <span className="text-xs font-medium">Identity Verified</span>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              linkSelfId()
+                              setIsDropdownOpen(false)
+                            }}
+                            className="flex items-center w-full gap-3 px-3 py-2 mb-1 text-sm text-cyan-400 transition-colors rounded-lg hover:bg-cyan-500/10 hover:text-cyan-300"
+                          >
+                            <Shield className="w-4 h-4" />
+                            Verify Identity
+                          </button>
+                        )}
+                        
                         <Link
                           href="/profile"
                           className="flex items-center w-full gap-3 px-3 py-2 text-sm text-slate-300 transition-colors rounded-lg hover:bg-slate-800/60 hover:text-white"
@@ -330,6 +363,21 @@ export default function UnifiedGamingNavigation() {
           </div>
         )}
       </div>
+
+      {/* Self.xyz Verification Modal */}
+      {showVerification && (
+        <SelfVerification
+          onSuccess={(result) => {
+            handleVerificationSuccess(result)
+            toast.success("Identity verified successfully!")
+          }}
+          onError={(error) => {
+            handleVerificationError(error)
+            toast.error(`Verification failed: ${error.message}`)
+          }}
+          onClose={() => setShowVerification(false)}
+        />
+      )}
     </nav>
   )
 }

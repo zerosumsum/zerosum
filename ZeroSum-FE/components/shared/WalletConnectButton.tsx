@@ -1,73 +1,24 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useActiveAccount, useActiveWallet, useConnectModal, useDisconnect } from "thirdweb/react"
+import { useActiveAccount, useConnectModal } from "thirdweb/react"
 import { thirdwebClient } from "@/lib/thirdwebClient"
 import { supportedChains } from "@/lib/thirdwebChains"
 import { Button } from "@/components/ui/button"
-import { Wallet, LogOut, ChevronDown, Shield, CheckCircle, User, Coins } from "lucide-react"
+import { Wallet } from "lucide-react"
 import { toast } from "react-hot-toast"
-import { useSelfId } from "@/hooks/useSelfId"
-import { SelfVerification } from "@/components/self/SelfVerification"
-import { usePublicClient } from "wagmi"
-import { formatEther } from "viem"
 
 interface WalletConnectButtonProps {
   className?: string
-  showBalance?: boolean
 }
 
 export default function WalletConnectButton({ 
-  className = "", 
-  showBalance = true 
+  className = ""
 }: WalletConnectButtonProps) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [balance, setBalance] = useState<string>("0.0000")
-  const [isLoadingBalance, setIsLoadingBalance] = useState(false)
-  
   const account = useActiveAccount()
-  const wallet = useActiveWallet()
   const { connect, isConnecting } = useConnectModal()
-  const { disconnect } = useDisconnect()
-  const publicClient = usePublicClient()
 
   const address = account?.address
   const isConnected = Boolean(address)
-
-  // Self.xyz identity verification
-  const {
-    isLinked,
-    linkSelfId,
-    showVerification,
-    setShowVerification,
-    handleVerificationSuccess,
-    handleVerificationError,
-  } = useSelfId()
-
-  // Fetch balance
-  useEffect(() => {
-    const fetchBalance = async () => {
-      if (!address || !publicClient) return
-      
-      setIsLoadingBalance(true)
-      try {
-        const rawBalance = await publicClient.getBalance({ address: address as `0x${string}` })
-        const formatted = parseFloat(formatEther(rawBalance)).toFixed(4)
-        setBalance(formatted)
-      } catch (err) {
-        console.error("Error fetching balance:", err)
-        setBalance("0.0000")
-      } finally {
-        setIsLoadingBalance(false)
-      }
-    }
-
-    if (address && publicClient) {
-      fetchBalance()
-      const interval = setInterval(fetchBalance, 30000)
-      return () => clearInterval(interval)
-    }
-  }, [address, publicClient])
 
   const handleConnect = async () => {
     try {
@@ -93,121 +44,17 @@ export default function WalletConnectButton({
     }
   }
 
-  const handleDisconnect = () => {
-    try {
-      if (wallet) {
-        disconnect(wallet)
-        toast.success("Wallet disconnected")
-        setIsDropdownOpen(false)
-      }
-    } catch (error: any) {
-      console.error("Disconnect error:", error)
-      toast.error("Failed to disconnect wallet")
-    }
-  }
-
-  const truncateAddress = (addr: string) => 
-    `${addr.slice(0, 6)}...${addr.slice(-4)}`
-
-  if (!isConnected) {
-    return (
-      <div className={`relative ${className}`}>
-        <Button
-          onClick={handleConnect}
-          disabled={isConnecting}
-          className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
-        >
-          <Wallet className="w-4 h-4 mr-2" />
-          {isConnecting ? "Connecting..." : "Connect Wallet"}
-        </Button>
-      </div>
-    )
-  }
+  // Only show connect button when not connected
+  if (isConnected) return null
 
   return (
-    <div className={`relative ${className}`}>
-      <Button
-        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white flex items-center gap-2"
-      >
-        <User className="w-4 h-4" />
-        {showBalance && (
-          <>
-            <span className="flex items-center gap-1">
-              <Coins className="w-4 h-4" />
-              {isLoadingBalance ? "..." : balance}
-            </span>
-            <span className="text-white/60">|</span>
-          </>
-        )}
-        {truncateAddress(address!)}
-        {isLinked && <CheckCircle className="w-4 h-4 text-green-300" />}
-        <ChevronDown className="w-4 h-4" />
-      </Button>
-
-      {isDropdownOpen && (
-        <div className="absolute top-full right-0 mt-2 w-72 bg-gray-900 border border-gray-700 rounded-lg shadow-lg z-50">
-          <div className="p-4">
-            <div className="mb-3 pb-3 border-b border-gray-700">
-              <div className="flex items-center gap-2 mb-2">
-                <User className="w-5 h-5 text-gray-400" />
-                <div className="text-sm font-medium text-white">
-                  {wallet?.getChain()?.name || "Connected Wallet"}
-                </div>
-              </div>
-              <div className="text-xs text-gray-400 font-mono mb-2">
-                {address}
-              </div>
-              {showBalance && (
-                <div className="flex items-center gap-2 text-sm text-gray-300 bg-gray-800 rounded px-2 py-1">
-                  <Coins className="w-4 h-4 text-yellow-400" />
-                  <span className="font-semibold">{balance} CELO</span>
-                </div>
-              )}
-            </div>
-            
-            {isLinked ? (
-              <div className="mb-2 p-2 bg-green-900/30 rounded-md flex items-center text-green-400 border border-green-500/20">
-                <CheckCircle className="w-4 h-4 mr-2" />
-                <span className="text-xs font-medium">Identity Verified</span>
-              </div>
-            ) : (
-              <button
-                onClick={() => {
-                  linkSelfId()
-                  setIsDropdownOpen(false)
-                }}
-                className="w-full flex items-center p-2 mb-2 text-left hover:bg-gray-800 rounded-md transition-colors text-cyan-400"
-              >
-                <Shield className="w-4 h-4 mr-3" />
-                Verify Identity
-              </button>
-            )}
-            
-            <button
-              onClick={handleDisconnect}
-              className="w-full flex items-center p-2 text-left hover:bg-gray-800 rounded-md transition-colors text-red-400"
-            >
-              <LogOut className="w-4 h-4 mr-3" />
-              Disconnect
-            </button>
-          </div>
-        </div>
-      )}
-
-      {showVerification && (
-        <SelfVerification
-          onSuccess={(result) => {
-            handleVerificationSuccess(result)
-            toast.success("Identity verified successfully!")
-          }}
-          onError={(error) => {
-            handleVerificationError(error)
-            toast.error(`Verification failed: ${error.message}`)
-          }}
-          onClose={() => setShowVerification(false)}
-        />
-      )}
-    </div>
+    <Button
+      onClick={handleConnect}
+      disabled={isConnecting}
+      className={`bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold rounded-xl px-6 py-3 h-12 ${className}`}
+    >
+      <Wallet className="w-5 h-5 mr-2" />
+      {isConnecting ? "CONNECTING..." : "CONNECT"}
+    </Button>
   )
 }
