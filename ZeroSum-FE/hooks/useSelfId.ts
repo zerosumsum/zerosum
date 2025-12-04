@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useAccount } from "wagmi";
+import { useActiveAccount } from "thirdweb/react";
 import { useSelfVerification } from "./useSelfVerification";
 import { CONTRACTS } from "@/config/contracts";
 
@@ -19,7 +19,9 @@ export type SelfIdProfile = {
 };
 
 export function useSelfId() {
-  const { address } = useAccount();
+  const account = useActiveAccount();
+  const address = account?.address;
+  
   const [profile, setProfile] = useState<SelfIdProfile | null>(null);
   const [isLinking, setIsLinking] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
