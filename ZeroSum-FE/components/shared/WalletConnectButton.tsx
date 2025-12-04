@@ -5,8 +5,10 @@ import { useActiveAccount, useActiveWallet, useConnectModal, useDisconnect } fro
 import { thirdwebClient } from "@/lib/thirdwebClient"
 import { supportedChains } from "@/lib/thirdwebChains"
 import { Button } from "@/components/ui/button"
-import { Wallet, LogOut, ChevronDown } from "lucide-react"
+import { Wallet, LogOut, ChevronDown, Shield, CheckCircle } from "lucide-react"
 import { toast } from "react-hot-toast"
+import { useSelfId } from "@/hooks/useSelfId"
+import { SelfVerification } from "@/components/self/SelfVerification"
 
 interface WalletConnectButtonProps {
   className?: string
@@ -25,6 +27,16 @@ export default function WalletConnectButton({
 
   const address = account?.address
   const isConnected = Boolean(address)
+
+  // Self ID integration
+  const {
+    isLinked,
+    linkSelfId,
+    showVerification,
+    setShowVerification,
+    handleVerificationSuccess,
+    handleVerificationError,
+  } = useSelfId()
 
   const handleConnect = async () => {
     try {
@@ -104,6 +116,24 @@ export default function WalletConnectButton({
               </div>
             </div>
             
+            {isLinked ? (
+              <div className="mb-2 p-2 bg-green-900/20 rounded-md flex items-center text-green-400">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                <span className="text-xs">Verified</span>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  linkSelfId()
+                  setIsDropdownOpen(false)
+                }}
+                className="w-full flex items-center p-2 mb-2 text-left hover:bg-gray-800 rounded-md transition-colors text-cyan-400"
+              >
+                <Shield className="w-4 h-4 mr-3" />
+                Verify Identity
+              </button>
+            )}
+            
             <button
               onClick={handleDisconnect}
               className="w-full flex items-center p-2 text-left hover:bg-gray-800 rounded-md transition-colors text-red-400"
@@ -113,6 +143,20 @@ export default function WalletConnectButton({
             </button>
           </div>
         </div>
+      )}
+
+      {showVerification && (
+        <SelfVerification
+          onSuccess={(result) => {
+            handleVerificationSuccess(result)
+            toast.success("Identity verified successfully!")
+          }}
+          onError={(error) => {
+            handleVerificationError(error)
+            toast.error(`Verification failed: ${error.message}`)
+          }}
+          onClose={() => setShowVerification(false)}
+        />
       )}
     </div>
   )
