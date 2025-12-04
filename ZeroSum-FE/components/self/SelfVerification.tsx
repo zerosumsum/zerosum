@@ -103,8 +103,8 @@ export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificati
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="relative w-full max-w-md rounded-3xl border border-white/10 bg-slate-900 p-6 shadow-2xl">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="relative w-full max-w-md mx-auto rounded-3xl border border-white/10 bg-slate-900 p-6 shadow-2xl">
         {onClose && (
           <button
             onClick={onClose}
