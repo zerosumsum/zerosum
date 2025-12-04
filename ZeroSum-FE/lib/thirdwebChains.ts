@@ -48,7 +48,9 @@ export const defaultChain = supportedChains[0] ?? (isMainnet ? celo : celoSepoli
 const allChains = [...mainnetChains, ...testnetChains];
 
 const chainMap = allChains.reduce<Record<number, ThirdwebChain>>((acc, chain) => {
-  acc[chain.id] = chain;
+  if (chain && chain.id) {
+    acc[chain.id] = chain;
+  }
   return acc;
 }, {});
 
