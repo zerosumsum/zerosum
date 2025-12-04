@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   SelfQRcodeWrapper,
   SelfAppBuilder,
   type SelfApp,
 } from "@selfxyz/qrcode";
 import { ethers } from "ethers";
-import { useAccount } from "wagmi";
+import { useActiveAccount } from "thirdweb/react";
 import { X } from "lucide-react";
 
 interface SelfVerificationProps {
@@ -17,8 +18,10 @@ interface SelfVerificationProps {
 }
 
 export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificationProps) {
-  const { address } = useAccount();
+  const account = useActiveAccount();
+  const address = account?.address;
   const [selfApp, setSelfApp] = useState<SelfApp | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   const apiEndpoint = process.env.NEXT_PUBLIC_SELF_ENDPOINT || "https://playground.self.xyz/api/verify";
   const isMainnet = apiEndpoint.includes("self.xyz") && 
@@ -69,6 +72,11 @@ export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificati
     }
   }, [address, onError]);
 
+  // Check if mounted (client-side)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Debug log to see if modal is rendering
   useEffect(() => {
     console.log("🔵 SelfVerification modal is rendering");
@@ -108,7 +116,10 @@ export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificati
     onError?.(new Error(errorMessage));
   };
 
-  return (
+  // Don't render on server or before mount
+  if (!mounted) return null;
+
+  const modalContent = (
     <div 
       className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black/70 backdrop-blur-sm"
       style={{ 
@@ -181,5 +192,8 @@ export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificati
       </div>
     </div>
   );
+
+  // Render modal at document body level using portal
+  return createPortal(modalContent, document.body);
 }
 
