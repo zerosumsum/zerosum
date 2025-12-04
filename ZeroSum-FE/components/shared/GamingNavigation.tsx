@@ -18,7 +18,8 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { useAccount, useDisconnect, useConfig, usePublicClient } from "wagmi"
+import { useConfig, usePublicClient } from "wagmi"
+import { useActiveAccount, useActiveWallet, useDisconnect as useThirdwebDisconnect } from "thirdweb/react"
 import WalletConnectButton from "./WalletConnectButton"
 import { toast } from "react-hot-toast"
 import { getViemClient } from "@/config/adapter"
@@ -77,9 +78,13 @@ export default function UnifiedGamingNavigation() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
 
-  // Wagmi hooks
-  const { address, isConnected } = useAccount()
-  const { disconnect } = useDisconnect()
+  // Thirdweb hooks
+  const account = useActiveAccount()
+  const wallet = useActiveWallet()
+  const { disconnect } = useThirdwebDisconnect()
+  
+  const address = account?.address
+  const isConnected = Boolean(address)
   
   // Simple balance hook
   const mntBalance = useETHBalance(address)
@@ -121,8 +126,10 @@ export default function UnifiedGamingNavigation() {
   const handleDisconnect = () => {
     setIsDropdownOpen(false)
     try {
-      disconnect()
-      toast.success("Wallet disconnected")
+      if (wallet) {
+        disconnect(wallet)
+        toast.success("Wallet disconnected")
+      }
     } catch (error: unknown) {
       console.error("Disconnect error:", error instanceof Error ? error.message : String(error))
       toast.error("Failed to disconnect wallet")
