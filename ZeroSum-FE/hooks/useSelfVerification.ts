@@ -4,10 +4,12 @@ import { useCallback } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { parseAbi } from "viem";
 
-// Self IdentityVerificationHub ABI
-// Contract addresses:
-// - Mainnet: 0xe57F4773bd9c9d8b6Cd70431117d353298B9f5BF
-// - Testnet: 0x16ECBA51e18a4a7e61fdC417f0d47AFEeDfbed74
+/**
+ * Self IdentityVerificationHub ABI
+ * Contract addresses:
+ * - Mainnet: 0xe57F4773bd9c9d8b6Cd70431117d353298B9f5BF
+ * - Testnet (Celo Sepolia): 0x16ECBA51e18a4a7e61fdC417f0d47AFEeDfbed74
+ */
 const VERIFICATION_HUB_ABI = parseAbi([
   "function verifySelfProof(bytes calldata proofPayload, bytes calldata userContextData) external",
 ]);
