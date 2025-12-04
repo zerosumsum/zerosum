@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 import { useSelfVerification } from "./useSelfVerification";
 import { CONTRACTS } from "@/config/contracts";
 
-type SelfIdProfile = {
+export type SelfIdProfile = {
   handle: string;
   reputationScore: number;
   attestations: number;
