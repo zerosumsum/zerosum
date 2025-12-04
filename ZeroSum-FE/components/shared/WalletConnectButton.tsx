@@ -1,14 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useActiveAccount, useActiveWallet, useConnectModal, useDisconnect } from "thirdweb/react"
 import { thirdwebClient } from "@/lib/thirdwebClient"
 import { supportedChains } from "@/lib/thirdwebChains"
 import { Button } from "@/components/ui/button"
-import { Wallet, LogOut, ChevronDown, Shield, CheckCircle } from "lucide-react"
+import { Wallet, LogOut, ChevronDown, Shield, CheckCircle, User, Coins } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { useSelfId } from "@/hooks/useSelfId"
 import { SelfVerification } from "@/components/self/SelfVerification"
+import { usePublicClient } from "wagmi"
+import { formatEther } from "viem"
 
 interface WalletConnectButtonProps {
   className?: string
@@ -17,13 +19,17 @@ interface WalletConnectButtonProps {
 
 export default function WalletConnectButton({ 
   className = "", 
-  showBalance = false 
+  showBalance = true 
 }: WalletConnectButtonProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [balance, setBalance] = useState<string>("0.0000")
+  const [isLoadingBalance, setIsLoadingBalance] = useState(false)
+  
   const account = useActiveAccount()
   const wallet = useActiveWallet()
   const { connect, isConnecting } = useConnectModal()
   const { disconnect } = useDisconnect()
+  const publicClient = usePublicClient()
 
   const address = account?.address
   const isConnected = Boolean(address)
@@ -37,6 +43,31 @@ export default function WalletConnectButton({
     handleVerificationSuccess,
     handleVerificationError,
   } = useSelfId()
+
+  // Fetch balance
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!address || !publicClient) return
+      
+      setIsLoadingBalance(true)
+      try {
+        const rawBalance = await publicClient.getBalance({ address: address as `0x${string}` })
+        const formatted = parseFloat(formatEther(rawBalance)).toFixed(4)
+        setBalance(formatted)
+      } catch (err) {
+        console.error("Error fetching balance:", err)
+        setBalance("0.0000")
+      } finally {
+        setIsLoadingBalance(false)
+      }
+    }
+
+    if (address && publicClient) {
+      fetchBalance()
+      const interval = setInterval(fetchBalance, 30000)
+      return () => clearInterval(interval)
+    }
+  }, [address, publicClient])
 
   const handleConnect = async () => {
     try {
@@ -97,23 +128,42 @@ export default function WalletConnectButton({
     <div className={`relative ${className}`}>
       <Button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
+        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white flex items-center gap-2"
       >
-        <Wallet className="w-4 h-4 mr-2" />
+        <User className="w-4 h-4" />
+        {showBalance && (
+          <>
+            <span className="flex items-center gap-1">
+              <Coins className="w-4 h-4" />
+              {isLoadingBalance ? "..." : balance}
+            </span>
+            <span className="text-white/60">|</span>
+          </>
+        )}
         {truncateAddress(address!)}
-        <ChevronDown className="w-4 h-4 ml-2" />
+        {isLinked && <CheckCircle className="w-4 h-4 text-green-300" />}
+        <ChevronDown className="w-4 h-4" />
       </Button>
 
       {isDropdownOpen && (
-        <div className="absolute top-full right-0 mt-2 w-64 bg-gray-900 border border-gray-700 rounded-lg shadow-lg z-50">
-          <div className="p-3">
-            <div className="mb-3">
-              <div className="text-sm font-medium text-white">
-                {wallet?.getChain()?.name || "Connected Wallet"}
+        <div className="absolute top-full right-0 mt-2 w-72 bg-gray-900 border border-gray-700 rounded-lg shadow-lg z-50">
+          <div className="p-4">
+            <div className="mb-3 pb-3 border-b border-gray-700">
+              <div className="flex items-center gap-2 mb-2">
+                <User className="w-5 h-5 text-gray-400" />
+                <div className="text-sm font-medium text-white">
+                  {wallet?.getChain()?.name || "Connected Wallet"}
+                </div>
               </div>
-              <div className="text-xs text-gray-400 font-mono">
+              <div className="text-xs text-gray-400 font-mono mb-2">
                 {address}
               </div>
+              {showBalance && (
+                <div className="flex items-center gap-2 text-sm text-gray-300 bg-gray-800 rounded px-2 py-1">
+                  <Coins className="w-4 h-4 text-yellow-400" />
+                  <span className="font-semibold">{balance} CELO</span>
+                </div>
+              )}
             </div>
             
             {isLinked ? (
