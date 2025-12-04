@@ -28,7 +28,7 @@ export default function WalletConnectButton({
   const address = account?.address
   const isConnected = Boolean(address)
 
-  // Self ID integration
+  // Self.xyz identity verification
   const {
     isLinked,
     linkSelfId,
