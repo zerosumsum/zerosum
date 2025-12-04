@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  base,
-  baseSepolia,
   celo,
   celoAlfajores,
 } from "thirdweb/chains";
@@ -10,19 +8,38 @@ import { defineChain } from "thirdweb";
 
 type ThirdwebChain = ReturnType<typeof defineChain>;
 
+// Define Celo Sepolia testnet
+export const celoSepolia = defineChain({
+  id: 11142220,
+  name: "Celo Sepolia Testnet",
+  nativeCurrency: {
+    name: "CELO",
+    symbol: "CELO",
+    decimals: 18,
+  },
+  blockExplorers: [
+    {
+      name: "CeloScan",
+      url: "https://alfajores.celoscan.io",
+      apiUrl: "https://api-alfajores.celoscan.io/api",
+    },
+  ],
+  testnet: true,
+});
+
 const isMainnet = process.env.NEXT_PUBLIC_ENVIRONMENT === "mainnet";
 
 // Mainnet chains
-export const mainnetChains: ThirdwebChain[] = [celo, base];
+export const mainnetChains: ThirdwebChain[] = [celo];
 
-// Testnet chains
+// Testnet chains - Celo Sepolia as default
 export const testnetChains: ThirdwebChain[] = [
+  celoSepolia,
   celoAlfajores,
-  baseSepolia,
 ];
 
 export const supportedChains = (isMainnet ? mainnetChains : testnetChains) as ThirdwebChain[];
-export const defaultChain = supportedChains[0] ?? (isMainnet ? celo : celoAlfajores);
+export const defaultChain = supportedChains[0] ?? (isMainnet ? celo : celoSepolia);
 
 const allChains = [...mainnetChains, ...testnetChains];
 
