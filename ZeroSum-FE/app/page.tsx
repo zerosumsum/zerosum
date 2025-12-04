@@ -32,7 +32,7 @@ import {
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import Image from "next/image"
-import { useAccount, useDisconnect } from "wagmi"
+import { useActiveAccount, useActiveWallet, useDisconnect } from "thirdweb/react"
 import { toast } from "react-hot-toast"
 import UnifiedGamingNavigation from "@/components/shared/GamingNavigation"
 import { useMiniKit } from '@coinbase/onchainkit/minikit'
@@ -93,9 +93,12 @@ export default function HomePage() {
   ]
 
 
-  // Wagmi hooks
-  const { address, isConnected, connector } = useAccount()
+  // Thirdweb hooks
+  const account = useActiveAccount()
+  const wallet = useActiveWallet()
   const { disconnect } = useDisconnect()
+  const address = account?.address
+  const isConnected = Boolean(address)
 
   // Balance and stats hooks
   const mntBalance = useMNTBalance(address)
@@ -260,7 +263,9 @@ export default function HomePage() {
     console.log("Disconnect initiated")
     setIsDropdownOpen(false)
     try {
-      disconnect()
+      if (wallet) {
+        disconnect(wallet)
+      }
       toast.success("Wallet disconnected")
     } catch (error: unknown) {
       console.error("Disconnect error:", error instanceof Error ? error.message : String(error))

@@ -16,7 +16,7 @@ import {
   Loader2
 } from "lucide-react"
 import Link from "next/link"
-import { useAccount } from "wagmi"
+import { useActiveAccount } from "thirdweb/react"
 import { useZeroSumData } from "@/hooks/useZeroSumContract"
 import { toast } from "react-hot-toast"
 import { formatEther } from "viem"
@@ -34,7 +34,9 @@ interface MyGame {
 }
 
 export default function MyGamesDropdown() {
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
+  const isConnected = Boolean(address)
   const { getGameCounter, getGame, getPlayers, getPlayerView } = useZeroSumData()
   
   const [isOpen, setIsOpen] = useState(false)

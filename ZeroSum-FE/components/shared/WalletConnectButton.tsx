@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { useAccount, useConnect, useDisconnect } from "wagmi"
+import { useActiveAccount, useActiveWallet, useConnectModal, useDisconnect } from "thirdweb/react"
+import { thirdwebClient } from "@/lib/thirdwebClient"
+import { supportedChains } from "@/lib/thirdwebChains"
 import { Button } from "@/components/ui/button"
 import { Wallet, LogOut, ChevronDown } from "lucide-react"
 import { toast } from "react-hot-toast"
@@ -16,13 +18,31 @@ export default function WalletConnectButton({
   showBalance = false 
 }: WalletConnectButtonProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const { address, isConnected, connector } = useAccount()
-  const { connect, connectors, isPending } = useConnect()
+  const account = useActiveAccount()
+  const wallet = useActiveWallet()
+  const { connect, isConnecting } = useConnectModal()
   const { disconnect } = useDisconnect()
 
-  const handleConnect = async (connector: any) => {
+  const address = account?.address
+  const isConnected = Boolean(address)
+
+  const handleConnect = async () => {
     try {
-      await connect({ connector })
+      await connect({
+        client: thirdwebClient,
+        chains: supportedChains,
+        size: "compact",
+        titleIcon: "https://zerosum-arena.vercel.app/og.png",
+        welcomeScreen: {
+          title: "Welcome to ZeroSum Gaming Arena",
+          subtitle: "Connect your wallet to get started",
+          img: {
+            src: "https://zerosum-arena.vercel.app/og.png",
+            width: 96,
+            height: 96,
+          },
+        },
+      })
       toast.success("Wallet connected successfully!")
     } catch (error: any) {
       console.error("Connection error:", error)
@@ -32,9 +52,11 @@ export default function WalletConnectButton({
 
   const handleDisconnect = () => {
     try {
-      disconnect()
-      toast.success("Wallet disconnected")
-      setIsDropdownOpen(false)
+      if (wallet) {
+        disconnect(wallet)
+        toast.success("Wallet disconnected")
+        setIsDropdownOpen(false)
+      }
     } catch (error: any) {
       console.error("Disconnect error:", error)
       toast.error("Failed to disconnect wallet")
@@ -48,44 +70,13 @@ export default function WalletConnectButton({
     return (
       <div className={`relative ${className}`}>
         <Button
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          disabled={isPending}
+          onClick={handleConnect}
+          disabled={isConnecting}
           className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
         >
           <Wallet className="w-4 h-4 mr-2" />
-          {isPending ? "Connecting..." : "Connect Wallet"}
-          <ChevronDown className="w-4 h-4 ml-2" />
+          {isConnecting ? "Connecting..." : "Connect Wallet"}
         </Button>
-
-        {isDropdownOpen && (
-          <div className="absolute top-full right-0 mt-2 w-64 bg-gray-900 border border-gray-700 rounded-lg shadow-lg z-50">
-            <div className="p-3">
-              <h3 className="text-sm font-medium text-gray-300 mb-3">Choose Wallet</h3>
-              <div className="space-y-2">
-                {connectors.map((connector) => (
-                  <button
-                    key={connector.uid}
-                    onClick={() => handleConnect(connector)}
-                    disabled={isPending}
-                    className="w-full flex items-center p-2 text-left hover:bg-gray-800 rounded-md transition-colors"
-                  >
-                    <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center mr-3">
-                      <Wallet className="w-4 h-4 text-gray-300" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-white">
-                        {connector.name}
-                      </div>
-                      <div className="text-xs text-gray-400">
-                        {connector.type}
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     )
   }
@@ -106,7 +97,7 @@ export default function WalletConnectButton({
           <div className="p-3">
             <div className="mb-3">
               <div className="text-sm font-medium text-white">
-                {connector?.name || "Connected Wallet"}
+                {wallet?.getChain()?.name || "Connected Wallet"}
               </div>
               <div className="text-xs text-gray-400 font-mono">
                 {address}
