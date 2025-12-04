@@ -10,8 +10,8 @@ import { ReactNode } from "react";
 
 // Log environment info for debugging
 console.log(`🌍 Environment: ${isMainnetEnvironment ? 'Mainnet' : 'Testnet'}`);
-console.log(`📡 Supported Networks:`, supportedChains.map(chain => chain.name));
-console.log(`🔧 Default Chain:`, defaultChain.name);
+console.log(`📡 Supported Networks:`, supportedChains.filter(chain => chain).map(chain => chain.name));
+console.log(`🔧 Default Chain:`, defaultChain?.name || 'Not set');
 
 interface AppKitProps {
   children: ReactNode;
