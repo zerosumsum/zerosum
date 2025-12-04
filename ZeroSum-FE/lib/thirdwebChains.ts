@@ -42,3 +42,6 @@ export function getChainName(chainId?: number): string {
 
 export const isMainnetEnvironment = isMainnet;
 
+
+
+
