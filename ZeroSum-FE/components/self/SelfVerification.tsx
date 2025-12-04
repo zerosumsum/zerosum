@@ -64,7 +64,6 @@ export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificati
       }).build();
 
       setSelfApp(app);
-      setUniversalLink(getUniversalLink(app));
     } catch (error) {
       console.error("Failed to initialize Self app:", error);
       onError?.(error instanceof Error ? error : new Error("Failed to initialize Self"));
