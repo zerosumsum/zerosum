@@ -100,6 +100,11 @@ export default function UnifiedGamingNavigation() {
     handleVerificationError,
   } = useSelfId()
 
+  // Debug log for showVerification state
+  useEffect(() => {
+    console.log("🔍 showVerification state changed:", showVerification);
+  }, [showVerification])
+
   useEffect(() => setMounted(true), [])
 
   // AppKit handles auto-connection automatically
@@ -256,6 +261,7 @@ export default function UnifiedGamingNavigation() {
                         ) : (
                           <button
                             onClick={() => {
+                              console.log("🔵 Verify Identity button clicked");
                               linkSelfId()
                               setIsDropdownOpen(false)
                             }}

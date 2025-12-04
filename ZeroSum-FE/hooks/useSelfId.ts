@@ -51,7 +51,12 @@ export function useSelfId() {
   }, [address]);
 
   const linkSelfId = useCallback(() => {
-    if (isLinking || !address) return;
+    console.log("🟢 linkSelfId called", { isLinking, address });
+    if (isLinking || !address) {
+      console.log("⚠️ Blocked: isLinking or no address");
+      return;
+    }
+    console.log("✅ Setting verification modal to show");
     setIsLinking(true);
     setShowVerification(true);
   }, [isLinking, address]);
