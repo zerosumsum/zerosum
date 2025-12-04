@@ -50,7 +50,7 @@ export function useSelfId() {
     }
   }, [address]);
 
-  const linkSelfId = useCallback(async () => {
+  const linkSelfId = useCallback(() => {
     if (isLinking || !address) return;
     setIsLinking(true);
     setShowVerification(true);
