@@ -69,6 +69,7 @@ export function useSelfId() {
           credentialSubject: result.credentialSubject,
         };
 
+        // Generate handle from wallet address
         const handle = `${address.slice(0, 6)}...${address.slice(-4)}`;
         const reputationScore = 100;
 
