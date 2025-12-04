@@ -1,8 +1,3 @@
-// hooks/index.ts
-
-// Export existing hooks
-export * from './use-mobile';
-export * from './use-toast';
-
-// Export contract hooks
-export * from './use-contracts';
+// Export all hooks from a single file for cleaner imports
+export { useSelfId } from './useSelfId';
+export { useSelfVerification } from './useSelfVerification';
