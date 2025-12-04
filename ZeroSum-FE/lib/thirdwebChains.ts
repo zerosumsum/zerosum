@@ -8,7 +8,11 @@ import { defineChain } from "thirdweb";
 
 type ThirdwebChain = ReturnType<typeof defineChain>;
 
-// Define Celo Sepolia testnet
+/**
+ * Celo Sepolia Testnet Configuration
+ * Chain ID: 11142220
+ * Default network for ZeroSum Gaming
+ */
 export const celoSepolia = defineChain({
   id: 11142220,
   name: "Celo Sepolia Testnet",
