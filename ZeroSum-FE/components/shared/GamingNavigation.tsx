@@ -12,40 +12,47 @@ import {
   Plus,
   Swords,
   Eye,
-  Trophy
+  Trophy,
+  Shield,
+  CheckCircle
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { useAccount, useDisconnect, useConfig, usePublicClient } from "wagmi"
-import AppKitConnectButton from "./AppKitConnectButton"
+import { useActiveAccount, useActiveWallet, useDisconnect as useThirdwebDisconnect } from "thirdweb/react"
+import { getRpcClient, eth_getBalance } from "thirdweb/rpc"
+import { celoSepolia } from "@/lib/thirdwebChains"
+import { thirdwebClient } from "@/lib/thirdwebClient"
+import WalletConnectButton from "./WalletConnectButton"
 import { toast } from "react-hot-toast"
-import { getViemClient } from "@/config/adapter"
-import { formatEther } from "viem"
 import MyGamesDropdown from "./MyGamesDropdown"
+import { useSelfId } from "@/hooks/useSelfId"
+import { SelfVerification } from "@/components/self/SelfVerification"
 
-// Simple ETH Balance Hook
-const useETHBalance = (address: string | undefined) => {
-  const config = useConfig()
-  const publicClient = usePublicClient()
+// Simple CELO Balance Hook
+const useCELOBalance = (address: string | undefined) => {
   const [balance, setBalance] = useState<string>("0.0000")
   const [isLoading, setIsLoading] = useState(false)
 
   const fetchBalance = async () => {
-    if (!address || !config) {
-      // Don't log when not connected - this is expected behavior
-      return
-    }
+    if (!address) return
 
     setIsLoading(true)
     try {
-      // Use publicClient directly since it's already on the correct chain
-      if (!publicClient) throw new Error("Public client not available")
-
-      const rawBalance = await publicClient.getBalance({ address: address as `0x${string}` })
-      const formatted = parseFloat(formatEther(rawBalance)).toFixed(4)
+      const rpcRequest = getRpcClient({ 
+        client: thirdwebClient, 
+        chain: celoSepolia 
+      })
+      
+      const balanceWei = await eth_getBalance(rpcRequest, {
+        address: address as `0x${string}`,
+      })
+      
+      // Convert Wei to CELO (divide by 10^18)
+      const balanceInCelo = Number(balanceWei) / 1e18
+      const formatted = balanceInCelo.toFixed(4)
       setBalance(formatted)
     } catch (err) {
-      console.error("❌ Error fetching ETH balance:", err)
+      console.error("❌ Error fetching CELO balance:", err)
       setBalance("0.0000")
     } finally {
       setIsLoading(false)
@@ -53,13 +60,12 @@ const useETHBalance = (address: string | undefined) => {
   }
 
   useEffect(() => {
-    // Only fetch balance if wallet is connected
-    if (address && config && publicClient) {
+    if (address) {
       fetchBalance()
       const interval = setInterval(fetchBalance, 30000)
       return () => clearInterval(interval)
     }
-  }, [address, config, publicClient])
+  }, [address])
 
   return { balance, isLoading, refetch: fetchBalance }
 }
@@ -73,12 +79,31 @@ export default function UnifiedGamingNavigation() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
 
-  // Wagmi hooks
-  const { address, isConnected } = useAccount()
-  const { disconnect } = useDisconnect()
+  // Thirdweb hooks
+  const account = useActiveAccount()
+  const wallet = useActiveWallet()
+  const { disconnect } = useThirdwebDisconnect()
   
-  // Simple balance hook
-  const mntBalance = useETHBalance(address)
+  const address = account?.address
+  const isConnected = Boolean(address)
+  
+  // CELO balance hook
+  const celoBalance = useCELOBalance(address)
+
+  // Self.xyz identity verification
+  const {
+    isLinked,
+    linkSelfId,
+    showVerification,
+    setShowVerification,
+    handleVerificationSuccess,
+    handleVerificationError,
+  } = useSelfId()
+
+  // Debug log for showVerification state
+  useEffect(() => {
+    console.log("🔍 showVerification state changed:", showVerification);
+  }, [showVerification])
 
   useEffect(() => setMounted(true), [])
 
@@ -107,8 +132,10 @@ export default function UnifiedGamingNavigation() {
   const handleDisconnect = () => {
     setIsDropdownOpen(false)
     try {
-      disconnect()
-      toast.success("Wallet disconnected")
+      if (wallet) {
+        disconnect(wallet)
+        toast.success("Wallet disconnected")
+      }
     } catch (error: unknown) {
       console.error("Disconnect error:", error instanceof Error ? error.message : String(error))
       toast.error("Failed to disconnect wallet")
@@ -190,7 +217,7 @@ export default function UnifiedGamingNavigation() {
                     <div className="flex items-center space-x-2">
                       <Coins className="w-4 h-4 text-emerald-400" />
                       <span className="text-sm font-medium text-emerald-400">
-                        {mntBalance.isLoading ? "..." : `${mntBalance.balance} ETH`}
+                        {celoBalance.isLoading ? "..." : `${celoBalance.balance} CELO`}
                       </span>
                     </div>
                   </Badge>
@@ -225,6 +252,26 @@ export default function UnifiedGamingNavigation() {
 
                       {/* Menu Items */}
                       <div className="p-2">
+                        {/* Self.xyz Verification */}
+                        {isLinked ? (
+                          <div className="mb-2 mx-2 p-2 bg-green-900/20 rounded-md flex items-center text-green-400 border border-green-500/20">
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            <span className="text-xs font-medium">Identity Verified</span>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              console.log("🔵 Verify Identity button clicked");
+                              linkSelfId()
+                              setIsDropdownOpen(false)
+                            }}
+                            className="flex items-center w-full gap-3 px-3 py-2 mb-1 text-sm text-cyan-400 transition-colors rounded-lg hover:bg-cyan-500/10 hover:text-cyan-300"
+                          >
+                            <Shield className="w-4 h-4" />
+                            Verify Identity
+                          </button>
+                        )}
+                        
                         <Link
                           href="/profile"
                           className="flex items-center w-full gap-3 px-3 py-2 text-sm text-slate-300 transition-colors rounded-lg hover:bg-slate-800/60 hover:text-white"
@@ -263,7 +310,7 @@ export default function UnifiedGamingNavigation() {
               </>
             ) : (
               <div className="flex flex-col items-center gap-2">
-                <AppKitConnectButton />
+                <WalletConnectButton />
                 <p className="text-xs text-slate-400 text-center">
                   Connect with any supported wallet
                 </p>
@@ -306,7 +353,7 @@ export default function UnifiedGamingNavigation() {
               {/* Mobile Connect Button */}
               {!isConnected && (
                 <div className="mx-4">
-                  <AppKitConnectButton />
+                  <WalletConnectButton />
                 </div>
               )}
               
@@ -317,10 +364,10 @@ export default function UnifiedGamingNavigation() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Coins className="w-4 h-4 text-emerald-400" />
-                        <span className="text-sm font-medium text-emerald-300">ETH Balance</span>
+                        <span className="text-sm font-medium text-emerald-300">CELO Balance</span>
                       </div>
                       <span className="text-sm font-bold text-emerald-400">
-                        {mntBalance.isLoading ? "..." : `${mntBalance.balance} ETH`}
+                        {celoBalance.isLoading ? "..." : `${celoBalance.balance} CELO`}
                       </span>
                     </div>
                   </div>
@@ -330,6 +377,21 @@ export default function UnifiedGamingNavigation() {
           </div>
         )}
       </div>
+
+      {/* Self.xyz Verification Modal */}
+      {showVerification && (
+        <SelfVerification
+          onSuccess={(result) => {
+            handleVerificationSuccess(result)
+            toast.success("Identity verified successfully!")
+          }}
+          onError={(error) => {
+            handleVerificationError(error)
+            toast.error(`Verification failed: ${error.message}`)
+          }}
+          onClose={() => setShowVerification(false)}
+        />
+      )}
     </nav>
   )
 }

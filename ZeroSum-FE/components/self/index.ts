@@ -1,0 +1,2 @@
+export { SelfVerification } from './SelfVerification';
+

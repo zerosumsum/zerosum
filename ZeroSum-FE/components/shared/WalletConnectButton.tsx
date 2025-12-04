@@ -1,27 +1,21 @@
 "use client"
 
-import { useState } from "react"
-import { useActiveAccount, useActiveWallet, useConnectModal, useDisconnect } from "thirdweb/react"
+import { useActiveAccount, useConnectModal } from "thirdweb/react"
 import { thirdwebClient } from "@/lib/thirdwebClient"
 import { supportedChains } from "@/lib/thirdwebChains"
 import { Button } from "@/components/ui/button"
-import { Wallet, LogOut, ChevronDown } from "lucide-react"
+import { Wallet } from "lucide-react"
 import { toast } from "react-hot-toast"
 
 interface WalletConnectButtonProps {
   className?: string
-  showBalance?: boolean
 }
 
 export default function WalletConnectButton({ 
-  className = "", 
-  showBalance = false 
+  className = ""
 }: WalletConnectButtonProps) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const account = useActiveAccount()
-  const wallet = useActiveWallet()
   const { connect, isConnecting } = useConnectModal()
-  const { disconnect } = useDisconnect()
 
   const address = account?.address
   const isConnected = Boolean(address)
@@ -50,70 +44,17 @@ export default function WalletConnectButton({
     }
   }
 
-  const handleDisconnect = () => {
-    try {
-      if (wallet) {
-        disconnect(wallet)
-        toast.success("Wallet disconnected")
-        setIsDropdownOpen(false)
-      }
-    } catch (error: any) {
-      console.error("Disconnect error:", error)
-      toast.error("Failed to disconnect wallet")
-    }
-  }
-
-  const truncateAddress = (addr: string) => 
-    `${addr.slice(0, 6)}...${addr.slice(-4)}`
-
-  if (!isConnected) {
-    return (
-      <div className={`relative ${className}`}>
-        <Button
-          onClick={handleConnect}
-          disabled={isConnecting}
-          className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
-        >
-          <Wallet className="w-4 h-4 mr-2" />
-          {isConnecting ? "Connecting..." : "Connect Wallet"}
-        </Button>
-      </div>
-    )
-  }
+  // Only show connect button when not connected
+  if (isConnected) return null
 
   return (
-    <div className={`relative ${className}`}>
-      <Button
-        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
-      >
-        <Wallet className="w-4 h-4 mr-2" />
-        {truncateAddress(address!)}
-        <ChevronDown className="w-4 h-4 ml-2" />
-      </Button>
-
-      {isDropdownOpen && (
-        <div className="absolute top-full right-0 mt-2 w-64 bg-gray-900 border border-gray-700 rounded-lg shadow-lg z-50">
-          <div className="p-3">
-            <div className="mb-3">
-              <div className="text-sm font-medium text-white">
-                {wallet?.getChain()?.name || "Connected Wallet"}
-              </div>
-              <div className="text-xs text-gray-400 font-mono">
-                {address}
-              </div>
-            </div>
-            
-            <button
-              onClick={handleDisconnect}
-              className="w-full flex items-center p-2 text-left hover:bg-gray-800 rounded-md transition-colors text-red-400"
-            >
-              <LogOut className="w-4 h-4 mr-3" />
-              Disconnect
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+    <Button
+      onClick={handleConnect}
+      disabled={isConnecting}
+      className={`bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold rounded-xl px-6 py-3 h-12 ${className}`}
+    >
+      <Wallet className="w-5 h-5 mr-2" />
+      {isConnecting ? "CONNECTING..." : "CONNECT"}
+    </Button>
   )
 }
