@@ -117,9 +117,9 @@ export default function WalletConnectButton({
             </div>
             
             {isLinked ? (
-              <div className="mb-2 p-2 bg-green-900/20 rounded-md flex items-center text-green-400">
+              <div className="mb-2 p-2 bg-green-900/30 rounded-md flex items-center text-green-400 border border-green-500/20">
                 <CheckCircle className="w-4 h-4 mr-2" />
-                <span className="text-xs">Verified</span>
+                <span className="text-xs font-medium">Identity Verified</span>
               </div>
             ) : (
               <button
