@@ -116,13 +116,13 @@ export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificati
         )}
 
         <div className="mb-6 text-center">
-          <h2 className="text-2xl font-semibold text-white">Verify Your Identity</h2>
-          <p className="mt-2 text-sm text-slate-300">
-            Scan this QR code with the Self app to verify your identity
+          <h2 className="text-2xl font-bold text-white">Verify Your Identity</h2>
+          <p className="mt-2 text-sm text-slate-400">
+            Scan this QR code with the Self app to complete verification
           </p>
           {(apiEndpoint.includes("playground") || apiEndpoint.includes("ngrok")) && (
-            <p className="mt-2 text-xs text-amber-300">
-              ⚠️ Using testnet endpoint
+            <p className="mt-2 text-xs text-amber-400 bg-amber-900/20 px-3 py-1 rounded">
+              ⚠️ Testnet mode
             </p>
           )}
         </div>
