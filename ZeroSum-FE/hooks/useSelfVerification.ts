@@ -65,7 +65,8 @@ export function useSelfVerification({
         });
       } catch (err) {
         console.error("Failed to submit to VerificationHub:", err);
-        throw err;
+        const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
+        throw new Error(`Verification submission failed: ${errorMessage}`);
       }
     },
     [verificationHubAddress, address, writeContract]
