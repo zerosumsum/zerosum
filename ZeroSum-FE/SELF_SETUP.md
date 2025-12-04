@@ -43,6 +43,14 @@ NEXT_PUBLIC_ENVIRONMENT=testnet
 5. Proof is stored locally and can be submitted onchain
 6. Verified badge appears in wallet dropdown
 
+## Features
+
+- Zero-knowledge proof based identity verification
+- Onchain proof submission to Self VerificationHub
+- Local storage of verification state
+- Visual verification badge in UI
+- Secure and privacy-preserving
+
 ## Testing
 
 To test the integration:
