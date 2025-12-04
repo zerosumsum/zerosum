@@ -34,12 +34,14 @@ export function SelfVerification({ onSuccess, onError, onClose }: SelfVerificati
       const userId = address || ethers.ZeroAddress;
       const endpointType = "staging_https";
       
-      console.log("[Self] Configuring verification:", {
-        endpoint: apiEndpoint,
-        endpointType,
-        scope: process.env.NEXT_PUBLIC_SELF_SCOPE || "zerosum-game",
-        isMainnet,
-      });
+      if (process.env.NODE_ENV === "development") {
+        console.log("[Self] Configuring verification:", {
+          endpoint: apiEndpoint,
+          endpointType,
+          scope: process.env.NEXT_PUBLIC_SELF_SCOPE || "zerosum-game",
+          isMainnet,
+        });
+      }
 
       const app = new SelfAppBuilder({
         version: 2,
