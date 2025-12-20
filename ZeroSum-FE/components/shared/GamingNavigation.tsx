@@ -12,7 +12,8 @@ import {
   Plus,
   Swords,
   Eye,
-  Trophy
+  Trophy,
+  CheckCircle2
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
@@ -22,6 +23,8 @@ import { toast } from "react-hot-toast"
 import { getViemClient } from "@/config/adapter"
 import { formatEther } from "viem"
 import MyGamesDropdown from "./MyGamesDropdown"
+import { useSelfId } from "@/hooks/useSelfId"
+import { SelfVerification } from "@/components/self"
 
 // Simple ETH Balance Hook
 const useETHBalance = (address: string | undefined) => {
@@ -70,12 +73,16 @@ export default function UnifiedGamingNavigation() {
   const [mounted, setMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isSelfModalOpen, setIsSelfModalOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
 
   // Wagmi hooks
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
+  
+  // Self.xyz hooks
+  const { isLinked, isVerified, linkSelfId, handleVerificationSuccess, handleVerificationError } = useSelfId()
   
   // Simple balance hook
   const mntBalance = useETHBalance(address)
@@ -113,6 +120,12 @@ export default function UnifiedGamingNavigation() {
       console.error("Disconnect error:", error instanceof Error ? error.message : String(error))
       toast.error("Failed to disconnect wallet")
     }
+  }
+
+  const handleVerifyIdentity = () => {
+    setIsDropdownOpen(false)
+    setIsSelfModalOpen(true)
+    linkSelfId()
   }
 
   // Click outside handlers
@@ -225,6 +238,28 @@ export default function UnifiedGamingNavigation() {
 
                       {/* Menu Items */}
                       <div className="p-2">
+                        <button
+                          onClick={handleVerifyIdentity}
+                          className={`flex items-center w-full gap-3 px-3 py-2 text-sm transition-colors rounded-lg hover:bg-slate-800/60 ${
+                            isVerified
+                              ? "text-emerald-400 hover:text-emerald-300"
+                              : "text-slate-300 hover:text-white"
+                          }`}
+                        >
+                          {isVerified ? (
+                            <CheckCircle2 className="w-4 h-4" />
+                          ) : (
+                            <User className="w-4 h-4" />
+                          )}
+                          <span className="flex-1 text-left">
+                            {isVerified ? "Verified Identity" : "Verify Identity"}
+                          </span>
+                          {isVerified && (
+                            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
+                              Verified
+                            </Badge>
+                          )}
+                        </button>
                         <Link
                           href="/profile"
                           className="flex items-center w-full gap-3 px-3 py-2 text-sm text-slate-300 transition-colors rounded-lg hover:bg-slate-800/60 hover:text-white"
@@ -330,6 +365,14 @@ export default function UnifiedGamingNavigation() {
           </div>
         )}
       </div>
+
+      {/* Self.xyz Verification Modal */}
+      <SelfVerification
+        isOpen={isSelfModalOpen}
+        onSuccess={handleVerificationSuccess}
+        onError={handleVerificationError}
+        onClose={() => setIsSelfModalOpen(false)}
+      />
     </nav>
   )
 }
