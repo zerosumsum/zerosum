@@ -1,19 +1,24 @@
 // hooks/useNetwork.ts
 import { useState, useEffect, useCallback } from 'react';
-import { useAccount, useChainId, useSwitchChain } from 'wagmi';
+import { useActiveAccount, useActiveWalletChain, useSwitchActiveWalletChain } from 'thirdweb/react';
 import {
   type NetworkType,
   getNetworkConfig,
   getNetworkFromChainId,
   getContractAddresses,
 } from '@/config/contracts';
+import { getChainById, supportedChains } from '@/lib/thirdwebChains';
 
 const DEFAULT_NETWORK = (process.env.NEXT_PUBLIC_DEFAULT_NETWORK as NetworkType) || 'base';
 
 export function useNetwork() {
-  const { address, isConnected } = useAccount();
-  const chainId = useChainId();
-  const { switchChain } = useSwitchChain();
+  const account = useActiveAccount();
+  const activeChain = useActiveWalletChain();
+  const switchChain = useSwitchActiveWalletChain();
+
+  const address = account?.address;
+  const isConnected = Boolean(address);
+  const chainId = activeChain?.id;
 
   const [currentNetwork, setCurrentNetwork] = useState<NetworkType>(DEFAULT_NETWORK);
 
@@ -39,10 +44,11 @@ export function useNetwork() {
   const switchToNetwork = useCallback(
     async (network: NetworkType) => {
       const targetConfig = getNetworkConfig(network);
+      const targetChain = getChainById(targetConfig.chainId);
 
-      if (switchChain) {
+      if (switchChain && targetChain) {
         try {
-          await switchChain({ chainId: targetConfig.chainId });
+          await switchChain(targetChain);
           setCurrentNetwork(network);
           return true;
         } catch (error) {

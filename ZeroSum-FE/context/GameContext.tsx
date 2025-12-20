@@ -2,7 +2,7 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from 'thirdweb/react'
 import { useZeroSumData, GameMode, GameStatus } from '@/hooks/useZeroSumContract'
 
 
@@ -154,7 +154,9 @@ class SmartCache {
 const gameCache = new SmartCache()
 
 export function GameProvider({ children }: { children: ReactNode }) {
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
+  const isConnected = Boolean(address)
   const { 
     getGameCounter, 
     getGame, 

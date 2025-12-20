@@ -1,6 +1,6 @@
 // hooks/useZeroSumContracts.ts - Your Original Ethers.js Pattern!
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useConfig, useAccount, useChainId } from 'wagmi'
+import { useActiveAccount, useActiveWalletChain } from 'thirdweb/react'
 import { ethers } from 'ethers'
 import { getProvider, getContract, getViemWalletClient, getViemClient } from '@/config/adapter'
 import {
@@ -47,8 +47,8 @@ const EXPLORER_URLS: Record<number, string> = {
 }
 
 const getExplorerTxUrl = (chainId: number | undefined, hash: string) => {
-  const normalizedChainId = chainId ?? 84532
-  const baseUrl = EXPLORER_URLS[normalizedChainId] || EXPLORER_URLS[84532]
+  const normalizedChainId = chainId ?? 11142220
+  const baseUrl = EXPLORER_URLS[normalizedChainId] || EXPLORER_URLS[11142220]
   const normalized = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
   return `${normalized}/tx/${hash}`
 }
@@ -57,8 +57,8 @@ const getExplorerTxUrl = (chainId: number | undefined, hash: string) => {
 const getContractAddresses = (chainId: number) => {
   const addresses = CONTRACT_ADDRESSES[chainId as keyof typeof CONTRACT_ADDRESSES]
   if (!addresses) {
-    console.warn(`⚠️ No contract addresses for chain ${chainId}, falling back to Base Sepolia`)
-    return CONTRACT_ADDRESSES[84532]
+    console.warn(`⚠️ No contract addresses for chain ${chainId}, falling back to Celo Sepolia Testnet`)
+    return CONTRACT_ADDRESSES[11142220]
   }
   return addresses
 }
@@ -175,11 +175,14 @@ export interface BettingOdds {
 
 // Provider hook with connection state management - Your Original Pattern!
 export function useContractProvider() {
-  const config = useConfig()
-  const { isConnected, address } = useAccount()
-  const chainId = useChainId()
+  const account = useActiveAccount()
+  const activeChain = useActiveWalletChain()
   const [providerReady, setProviderReady] = useState(false)
   const providerRef = useRef<any>(null)
+  
+  const address = account?.address
+  const isConnected = Boolean(address)
+  const chainId = activeChain?.id
   
   useEffect(() => {
     console.log('🔗 Initializing ethers provider...')
@@ -187,7 +190,7 @@ export function useContractProvider() {
     const initProvider = async () => {
       try {
         // Use your original simple pattern
-        const provider = getProvider()
+        const provider = getProvider({ chainId })
         if (provider) {
           providerRef.current = provider
           setProviderReady(true)
@@ -203,7 +206,7 @@ export function useContractProvider() {
     }
     
     initProvider()
-  }, [])
+  }, [chainId])
   
   const getProviderInstance = useCallback(() => {
     return providerRef.current
@@ -215,15 +218,15 @@ export function useContractProvider() {
     }
     
     try {
-      // Use viem wallet client for write operations
-      const walletClient = await getViemWalletClient(config)
-      console.log('✅ Viem wallet client obtained for write operations')
-      return walletClient
+      // For thirdweb, we'll use the account directly with thirdweb's methods
+      // This will be handled in the contract interaction functions
+      console.log('✅ Using thirdweb account for write operations')
+      return { account, chain: activeChain }
     } catch (error) {
       console.error('❌ Failed to get wallet client:', error)
       throw error
     }
-  }, [isConnected, address, config])
+  }, [isConnected, address, account, activeChain])
   
   return {
     providerReady,
@@ -239,7 +242,6 @@ export function useContractProvider() {
 export function useZeroSumContract() {
   const { getWalletClient, chainId } = useContractProvider()
   const { getContracts } = useZeroSumData()
-  const config = useConfig()
   const [loading, setLoading] = useState(false)
 
   // Get contract addresses for current chain

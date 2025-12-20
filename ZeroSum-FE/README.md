@@ -14,6 +14,7 @@ ZeroSum Gaming is a blockchain-based competitive gaming platform where players c
 - 💰 **Spectator Betting**: Bet on your favorite players
 - 🏆 **Staking Rewards**: Stake tokens for bonus winnings
 - ⚡ **Multi-Chain**: Deployed on Celo and Base networks
+- 🔐 **Identity Verification**: Integrated with Self.xyz for secure player verification
 - ✅ **Verified Contracts**: All contracts verified on block explorers
 
 ---

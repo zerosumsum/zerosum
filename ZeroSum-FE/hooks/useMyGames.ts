@@ -1,6 +1,6 @@
 // hooks/useMyGames.ts (Fixed Version)
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from 'thirdweb/react'
 import { useZeroSumData, GameMode, GameStatus } from './useZeroSumContract'
 
 
@@ -63,7 +63,9 @@ function invalidateCache(): void {
 }
 
 export function useMyGames() {
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
+  const isConnected = Boolean(address)
   const { 
     getGameCounter, 
     getGame, 
